@@ -1,0 +1,136 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.playerWrapper {
+  width: 100%;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.albumArt {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.info {
+  text-align: center;
+}
+
+.info h2 {
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.info p {
+  color: var(--foreground);
+  opacity: 0.8;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.controlBtn {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.controlBtn:hover {
+  color: var(--accent);
+  transform: scale(1.1);
+}
+
+.playBtn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+}
+
+.playBtn:hover {
+  background-color: var(--primary-hover);
+  color: white;
+}
+
+.progress {
+  width: 100%;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: 3px;
+}
+
+.time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--foreground);
+  opacity: 0.8;
+}
+
+.note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #888;
+  text-align: center;
+}
+
+.addForm {
+  display: flex;
+  gap: .5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.addForm input { flex: 1; padding: .5rem; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); }
+
+.trackList { width: 100%; display:flex; flex-direction:column; gap: .75rem; }
+
+.track { display:flex; align-items:center; gap: .75rem; background: rgba(255,255,255,0.02); padding: .5rem; border-radius: 8px; }
+
+.track .info { display:flex; align-items:center; gap:.5rem; flex:1 }
+
+.audio { width: 240px; }
+
+.delete { background:none; border:none; cursor:pointer; }

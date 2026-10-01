@@ -1,0 +1,16 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.form { display:flex; gap:.5rem; margin-bottom:1rem }
+.form input { padding:.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.08); }
+
+.list { display:flex; flex-direction:column; gap:.75rem }
+.pinCard { display:flex; align-items:center; gap:.75rem; background: rgba(255,255,255,0.02); padding:.75rem; border-radius:10px }
+.pinIcon { width:36px; height:36px; display:flex; align-items:center; justify-content:center }
+.content h3 { margin:0 }
+.content .note { color: #ccc; margin: 0.25rem 0 }
+.content .author { color: #aaa }
+.delete { margin-left:auto; background:none; border:none; cursor:pointer }

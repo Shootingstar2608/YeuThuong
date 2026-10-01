@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String   // "GIFT" or "FOOD"
+  createdAt DateTime @default(now())
+}
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Photo {
+  id        Int      @id @default(autoincrement())
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+}
+
+model Music {
+  id        Int      @id @default(autoincrement())
+  title     String
+  artist    String?
+  url       String
+  createdAt DateTime @default(now())
+}
+
+model Pin {
+  id        Int      @id @default(autoincrement())
+  title     String
+  note      String?
+  author    String?  // name of who pinned it
+  createdAt DateTime @default(now())
+}

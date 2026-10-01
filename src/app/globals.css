@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+:root {
+  --background: #fff0f5; /* LavenderBlush */
+  --foreground: #4a4a4a;
+  --primary: #ffb6c1; /* LightPink */
+  --primary-hover: #ff69b4; /* HotPink */
+  --secondary: #ffc0cb; /* Pink */
+  --accent: #ff1493; /* DeepPink */
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --border-radius: 16px;
+  --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Quicksand', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--card-bg);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: var(--border-radius);
+  border: var(--border);
+  box-shadow: var(--box-shadow);
+}
+
+/* Buttons */
+.btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(255, 105, 180, 0.2);
+}
+
+.btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 105, 180, 0.4);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+}
+.btn-accent:hover {
+  background-color: #d11075;
+}
+
+/* Input Fields */
+input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--secondary);
+  border-radius: 12px;
+  font-family: 'Quicksand', sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+input[type="text"]:focus {
+  border-color: var(--primary-hover);
+}
+
+/* Layout Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  text-shadow: 1px 1px 2px rgba(255, 20, 147, 0.2);
+}
