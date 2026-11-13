@@ -1,40 +1,43 @@
-"use client";
+'use client';
 import { useState, useEffect } from 'react';
 import styles from './pins.module.css';
-import { Trash2, Pin as PinIcon } from 'lucide-react';
+import { Trash2, PinIcon, Plus, Heart } from 'lucide-react';
 
-interface PinItem {
-  id: number;
-  title: string;
-  note?: string;
-  author?: string;
-}
+interface PinItem { id: number; title: string; note?: string; author?: string; }
+
+const PIN_COLORS = [
+  '#ffd6e0', '#ffe4c4', '#d4f0ff', '#d4f0d4', '#e8d5f5', '#fff3cd',
+];
 
 export default function PinsPage() {
-  const [pins, setPins] = useState<PinItem[]>([]);
-  const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
+  const [pins, setPins]     = useState<PinItem[]>([]);
+  const [title, setTitle]   = useState('');
+  const [note, setNote]     = useState('');
   const [author, setAuthor] = useState('');
-
-  useEffect(() => { fetchPins(); }, []);
+  const [showForm, setShowForm] = useState(false);
 
   const fetchPins = async () => {
-    const res = await fetch('/api/pins');
-    const data = await res.json();
-    setPins(data);
+    const res  = await fetch('/api/pins');
+    if (res.ok) {
+      const data = await res.json();
+      setPins(data);
+    }
   };
+
+  useEffect(() => {
+    fetch('/api/pins').then(async (r) => {
+      if (r.ok) setPins(await r.json());
+    });
+  }, []);
 
   const addPin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
     const res = await fetch('/api/pins', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, note, author })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, note, author }),
     });
-    if (res.ok) {
-      setTitle(''); setNote(''); setAuthor(''); fetchPins();
-    }
+    if (res.ok) { setTitle(''); setNote(''); setAuthor(''); setShowForm(false); fetchPins(); }
   };
 
   const deletePin = async (id: number) => {
@@ -43,26 +46,54 @@ export default function PinsPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className="title">Bảng Ghim Của Chúng Ta</h1>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div>
+          <p className="eyebrow"><Heart size={13} /> Our Board</p>
+          <h1 className={styles.title}>Bảng Ghim Của Chúng Ta</h1>
+          <p className={styles.sub}>Những điều muốn nhớ mãi mãi</p>
+        </div>
+        <button className="btn" type="button" onClick={() => setShowForm(v => !v)}>
+          <Plus size={17} /> {showForm ? 'Huỷ' : 'Thêm ghim'}
+        </button>
+      </div>
 
-      <form onSubmit={addPin} className={styles.form}>
-        <input placeholder="Tiêu đề" value={title} onChange={e => setTitle(e.target.value)} />
-        <input placeholder="Ghi chú (tùy chọn)" value={note} onChange={e => setNote(e.target.value)} />
-        <input placeholder="Ghim bởi (tên)" value={author} onChange={e => setAuthor(e.target.value)} />
-        <button type="submit" className="btn btn-accent">Ghim</button>
-      </form>
+      {showForm && (
+        <form onSubmit={addPin} className={styles.addForm}>
+          <input placeholder="Tiêu đề *" value={title}  onChange={e => setTitle(e.target.value)}  required />
+          <textarea placeholder="Ghi chú (tuỳ chọn)..." value={note}   onChange={e => setNote(e.target.value)} />
+          <input placeholder="Người ghim (tên)" value={author} onChange={e => setAuthor(e.target.value)} />
+          <button className="btn" type="submit"><PinIcon size={16} /> Ghim lên bảng</button>
+        </form>
+      )}
 
-      <div className={styles.list}>
-        {pins.map(p => (
-          <div key={p.id} className={styles.pinCard}>
-            <div className={styles.pinIcon}><PinIcon color="#ff69b4" /></div>
-            <div className={styles.content}>
-              <h3>{p.title}</h3>
-              <p className={styles.note}>{p.note}</p>
-              <small className={styles.author}>{p.author}</small>
+      {pins.length === 0 && !showForm && (
+        <div className={styles.empty}>
+          <div className={styles.emptyIcon}>📌</div>
+          <h2>Bảng ghim đang trống</h2>
+          <p>Ghim những điều quan trọng, lời nhắn nhủ, hay kỷ niệm đáng nhớ lên đây!</p>
+          <button className="btn" type="button" onClick={() => setShowForm(true)}><Plus size={16} /> Tạo ghim đầu tiên</button>
+        </div>
+      )}
+
+      <div className={styles.board}>
+        {pins.map((p, i) => (
+          <div
+            key={p.id}
+            className={styles.pinCard}
+            style={{ background: PIN_COLORS[i % PIN_COLORS.length], animationDelay: `${i * 0.06}s` }}
+          >
+            <div className={styles.pinNail} aria-hidden="true">
+              <PinIcon size={18} />
             </div>
-            <button onClick={() => deletePin(p.id)} className={styles.delete}><Trash2 /></button>
+            <div className={styles.pinContent}>
+              <h3 className={styles.pinTitle}>{p.title}</h3>
+              {p.note && <p className={styles.pinNote}>{p.note}</p>}
+              {p.author && <span className={styles.pinAuthor}>— {p.author}</span>}
+            </div>
+            <button type="button" className={styles.deleteBtn} onClick={() => deletePin(p.id)} title="Xoá ghim">
+              <Trash2 size={15} />
+            </button>
           </div>
         ))}
       </div>

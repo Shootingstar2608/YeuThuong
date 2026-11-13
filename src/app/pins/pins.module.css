@@ -1,16 +1,118 @@
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem;
+.page { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.form { display:flex; gap:.5rem; margin-bottom:1rem }
-.form input { padding:.5rem; border-radius:8px; border:1px solid rgba(0,0,0,0.08); }
+.title { font-size: 2rem; font-weight: 800; color: var(--accent); margin: 0.3rem 0 0.2rem; }
+.sub   { color: var(--muted); font-size: 0.85rem; }
 
-.list { display:flex; flex-direction:column; gap:.75rem }
-.pinCard { display:flex; align-items:center; gap:.75rem; background: rgba(255,255,255,0.02); padding:.75rem; border-radius:10px }
-.pinIcon { width:36px; height:36px; display:flex; align-items:center; justify-content:center }
-.content h3 { margin:0 }
-.content .note { color: #ccc; margin: 0.25rem 0 }
-.content .author { color: #aaa }
-.delete { margin-left:auto; background:none; border:none; cursor:pointer }
+/* Add form */
+.addForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: rgba(255,255,255,0.9);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp 0.3s var(--ease-smooth) both;
+}
+
+/* Empty */
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 3.5rem 2rem; gap: 0.75rem; color: var(--muted);
+}
+.emptyIcon { font-size: 3rem; animation: float 3s ease-in-out infinite; margin-bottom: 0.5rem; }
+.empty h2 { color: var(--foreground); }
+.empty p  { max-width: 380px; line-height: 1.6; margin-bottom: 0.5rem; }
+
+/* Board – masonry-style */
+.board {
+  columns: 3 240px;
+  gap: 1rem;
+}
+
+/* Sticky note card */
+.pinCard {
+  position: relative;
+  break-inside: avoid;
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.2rem 1.2rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.07);
+  transition: all var(--t-base) var(--ease-spring);
+  animation: fadeUp 0.4s var(--ease-smooth) both;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pinCard:hover {
+  transform: translateY(-4px) rotate(0.5deg);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.14), 0 4px 10px rgba(0,0,0,0.09);
+}
+
+.pinNail {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e74c3c;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  transition: transform var(--t-fast) var(--ease-spring);
+}
+
+.pinCard:hover .pinNail { transform: translateX(-50%) rotate(15deg) scale(1.15); }
+
+.pinContent { flex: 1; }
+
+.pinTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d1c29;
+  line-height: 1.3;
+  margin-bottom: 0.4rem;
+}
+
+.pinNote {
+  font-size: 0.85rem;
+  color: #5a3f50;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.pinAuthor {
+  display: block;
+  font-size: 0.75rem;
+  color: #8a6070;
+  font-style: italic;
+  margin-top: 0.4rem;
+}
+
+.deleteBtn {
+  align-self: flex-end;
+  background: rgba(0,0,0,0.06);
+  border: none;
+  color: rgba(0,0,0,0.35);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--t-fast);
+}
+.pinCard:hover .deleteBtn { opacity: 1; }
+.deleteBtn:hover { background: rgba(220,50,50,0.15); color: #c0392b; }
+
+@media (max-width: 640px) {
+  .board { columns: 2 160px; }
+  .deleteBtn { opacity: 1; }
+}

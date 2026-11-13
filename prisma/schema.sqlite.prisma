@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String // "GIFT" or "FOOD"
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  spaceId   Int?
+  space     Space?   @relation(fields: [spaceId], references: [id])
+}
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  userId      Int?
+  user        User?    @relation(fields: [userId], references: [id])
+  spaceId     Int?
+  space       Space?   @relation(fields: [spaceId], references: [id])
+}
+
+model Photo {
+  id        Int      @id @default(autoincrement())
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  spaceId   Int?
+  space     Space?   @relation(fields: [spaceId], references: [id])
+}
+
+model Music {
+  id        Int      @id @default(autoincrement())
+  title     String
+  artist    String?
+  url       String
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  spaceId   Int?
+  space     Space?   @relation(fields: [spaceId], references: [id])
+}
+
+model Pin {
+  id        Int      @id @default(autoincrement())
+  title     String
+  note      String?
+  author    String? // name of who pinned it
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  spaceId   Int?
+  space     Space?   @relation(fields: [spaceId], references: [id])
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  items        Item[]
+  goals        Goal[]
+  photos       Photo[]
+  music        Music[]
+  pins         Pin[]
+  sessions     Session[]
+  memberships  SpaceMember[]
+  messages     ChatMessage[]
+  currentTurns SharedGame[]  @relation("CurrentTurn")
+  wonGames     SharedGame[]  @relation("Winner")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Space {
+  id         Int               @id @default(autoincrement())
+  name       String
+  inviteCode String            @unique
+  birthday         String?
+  anniversaryDate  String?
+  createdAt        DateTime          @default(now())
+  members    SpaceMember[]
+  items      Item[]
+  goals      Goal[]
+  photos     Photo[]
+  music      Music[]
+  pins       Pin[]
+  messages   ChatMessage[]
+  game             SharedGame?
+  memoryGame       SharedMemoryGame?
+  secretContract   SecretContract?
+  secretJournals   SecretJournal[]
+  secretCards      SecretCustomCard[]
+  secretCustomItems SecretCustomItem[]
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  userId    Int
+  spaceId   Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+
+model SharedGame {
+  id                Int      @id @default(autoincrement())
+  spaceId           Int      @unique
+  board             String   @default(".........")
+  currentTurnUserId Int?
+  winnerUserId      Int?
+  status            String   @default("PLAYING")
+  updatedAt         DateTime @updatedAt
+  space             Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  currentTurnUser   User?    @relation("CurrentTurn", fields: [currentTurnUserId], references: [id])
+  winnerUser        User?    @relation("Winner", fields: [winnerUserId], references: [id])
+}
+
+model SharedMemoryGame {
+  id             Int       @id @default(autoincrement())
+  spaceId        Int       @unique
+  cards          String
+  openIndices    String    @default("[]")
+  matchedIndices String    @default("[]")
+  mismatchUntil  DateTime?
+  moves          Int       @default(0)
+  updatedAt      DateTime  @updatedAt
+  space          Space     @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+
+model SpaceMember {
+  id       Int      @id @default(autoincrement())
+  role     String   @default("PARTNER")
+  joinedAt DateTime @default(now())
+  userId   Int
+  spaceId  Int
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  space    Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, spaceId])
+}
+
+model SecretContract {
+  id             Int       @id @default(autoincrement())
+  spaceId        Int       @unique
+  bossName       String    @default("chồng yêu của Vân")
+  slaveName      String    @default("vợ yêu của Phúc")
+  rules          String    @default("[\"Tuyệt đối vâng lời mệnh lệnh của Boss trong suốt buổi train\",\"Luôn sử dụng xưng hô Boss - Em/Nô lệ\",\"Thông báo ngay lập tức nếu cảm thấy không an toàn\",\"Tuân thủ nghiêm ngặt từ an toàn\"]")
+  hardLimits     String    @default("[\"Không gây tổn thương vĩnh viễn\",\"Không ghi hình phát tán bên ngoài\",\"Dừng lại ngay khi hô từ an toàn ĐỎ\"]")
+  safewords      String    @default("🔴 ĐỎ: Dừng lại ngay lập tức | 🟡 VÀNG: Chậm lại hoặc giảm cường độ | 🟢 XANH: Cảm giác rất tốt, tiếp tục")
+  aftercare      String    @default("Ôm ấp vỗ về, uống nước ấm, khen ngợi và cùng nhau trò chuyện ngọt ngào sau khi kết thúc buổi train.")
+  signedAt       DateTime?
+  bossSigned     Boolean   @default(false)
+  slaveSigned    Boolean   @default(false)
+  bossSignature  String?
+  slaveSignature String?
+  updatedAt      DateTime  @updatedAt
+  space          Space     @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+
+model SecretJournal {
+  id        Int      @id @default(autoincrement())
+  spaceId   Int
+  title     String
+  content   String
+  rating    Int      @default(5)
+  date      String
+  tags      String   @default("[]")
+  author    String   @default("Boss")
+  createdAt DateTime @default(now())
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+
+model SecretCustomCard {
+  id        Int      @id @default(autoincrement())
+  spaceId   Int
+  type      String   // "TRUTH", "DARE", "TASK"
+  content   String
+  level     Int      @default(1) // 1: Dạo đầu nhẹ nhàng, 2: Khiêu khích, 3: Táo bạo/Hoang dã
+  createdAt DateTime @default(now())
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+
+model SecretCustomItem {
+  id        Int      @id @default(autoincrement())
+  spaceId   Int
+  category  String   // "COSPLAY" or "PROP"
+  name      String
+  desc      String?
+  icon      String?  @default("✨")
+  createdAt DateTime @default(now())
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+}
+

@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "use:sqlite": "cp prisma/schema.sqlite.prisma prisma/schema.prisma && prisma generate",
+    "use:postgres": "sed -i 's/provider = \"sqlite\"/provider = \"postgresql\"/' prisma/schema.prisma && prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",

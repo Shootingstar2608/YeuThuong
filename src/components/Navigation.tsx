@@ -1,46 +1,131 @@
+'use client';
+
 import Link from 'next/link';
-import { Heart, Gift, Image as ImageIcon, Gamepad2, Music, CheckSquare, Pin } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  Heart, Gift, Images, Gamepad2, Music2,
+  CheckSquare, MapPin, LogIn,
+  MessageCircle, Sparkles, Settings, Home, Flame,
+} from 'lucide-react';
 import styles from './Navigation.module.css';
 
-const Navigation = () => {
+const navItems = [
+  { href: '/',         icon: Home,          label: 'Home' },
+  { href: '/random',   icon: Sparkles,      label: 'Quay' },
+  { href: '/birthday', icon: Gift,          label: 'Quà' },
+  { href: '/gallery',  icon: Images,        label: 'Ảnh' },
+  { href: '/minigame', icon: Gamepad2,      label: 'Game' },
+  { href: '/music',    icon: Music2,        label: 'Nhạc' },
+  { href: '/chat',     icon: MessageCircle, label: 'Chat' },
+  { href: '/pins',     icon: MapPin,        label: 'Pin' },
+  { href: '/goals',    icon: CheckSquare,   label: 'Goals' },
+];
+
+export default function Navigation() {
+  const pathname = usePathname();
+  const [user, setUser]     = useState<{ name: string } | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me').then(async (r) => {
+      if (r.ok) setUser((await r.json()).user);
+    });
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setUser(null);
+    window.location.href = '/auth/login';
+  }
+
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
+
   return (
-    <header className={`${styles.header} glass`}>
-      <div className={styles.logo}>
-        <Heart fill="var(--accent)" color="var(--accent)" size={28} />
-        <span>Our Space</span>
-      </div>
-      <nav className={styles.nav}>
-        <Link href="/" className={styles.link}>
-          <Heart size={20} />
-          <span>Home</span>
+    <>
+      {/* ── Top bar (desktop) ── */}
+      <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
+        <Link href="/" className={styles.logo}>
+          <span className={styles.logoHeart}>
+            <Heart size={20} fill="currentColor" />
+          </span>
+          <span className={styles.logoText}>Yêu Thương</span>
         </Link>
-        <Link href="/random" className={styles.link}>
-          <Gift size={20} />
-          <span>Random</span>
+
+        <nav className={styles.desktopNav} aria-label="Điều hướng chính">
+          {navItems.map(({ href, icon: Icon, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`${styles.link} ${isActive(href) ? styles.active : ''}`}
+            >
+              <Icon size={17} />
+              <span>{label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <div className={styles.userSection}>
+          {user ? (
+            <>
+              <Link
+                href="/secret"
+                className={`${styles.iconBtn} ${isActive('/secret') ? styles.active : ''}`}
+                title="Lãnh địa bí mật 18+ (Boss & Slave)"
+              >
+                <Flame size={18} color="#ff3366" />
+              </Link>
+              <Link href="/space" className={`${styles.iconBtn} ${isActive('/space') ? styles.active : ''}`} title="Space">
+                <Settings size={18} />
+              </Link>
+              <button type="button" className={styles.avatarBtn} onClick={logout} title={`Đăng xuất (${user.name})`}>
+                <span className={styles.avatarRing}>
+                  {user.name.charAt(0).toUpperCase()}
+                </span>
+              </button>
+            </>
+          ) : (
+            <Link href="/auth/login" className="btn" style={{ fontSize: '0.82rem', padding: '0.5rem 1rem' }}>
+              <LogIn size={15} /> Đăng nhập
+            </Link>
+          )}
+        </div>
+      </header>
+
+      {/* ── Bottom navigation (mobile) ── */}
+      <nav className={styles.bottomNav} aria-label="Điều hướng dưới">
+        {navItems.slice(0, 4).map(({ href, icon: Icon, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className={`${styles.bottomLink} ${isActive(href) ? styles.bottomActive : ''}`}
+          >
+            <Icon size={22} />
+            <span>{label}</span>
+          </Link>
+        ))}
+        <Link
+          href="/secret"
+          className={`${styles.bottomLink} ${isActive('/secret') ? styles.bottomActive : ''}`}
+        >
+          <Flame size={22} color="#ff3366" />
+          <span>Bí Mật</span>
         </Link>
-        <Link href="/gallery" className={styles.link}>
-          <ImageIcon size={20} />
-          <span>Gallery</span>
-        </Link>
-        <Link href="/minigame" className={styles.link}>
-          <Gamepad2 size={20} />
-          <span>Minigame</span>
-        </Link>
-        <Link href="/music" className={styles.link}>
-          <Music size={20} />
-          <span>Music</span>
-        </Link>
-        <Link href="/pins" className={styles.link}>
-          <Pin size={20} />
-          <span>Pin</span>
-        </Link>
-        <Link href="/goals" className={styles.link}>
-          <CheckSquare size={20} />
-          <span>Goals</span>
+        <Link
+          href="/space"
+          className={`${styles.bottomLink} ${isActive('/space') ? styles.bottomActive : ''}`}
+        >
+          <Settings size={22} />
+          <span>Space</span>
         </Link>
       </nav>
-    </header>
+    </>
   );
-};
-
-export default Navigation;
+}
